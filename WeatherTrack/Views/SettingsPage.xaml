@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="WeatherTrack.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Settings">
+
+    <!--  CUSTOM RADIO BUTTONS  -->
+    <ContentPage.Resources>
+        <ControlTemplate x:Key="RadioButtonTemplate">
+            <Border
+                Margin="8"
+                BackgroundColor="#F3F2F1"
+                HeightRequest="90"
+                HorizontalOptions="Start"
+                Stroke="Black"
+                StrokeShape="RoundRectangle 10"
+                StrokeThickness="2"
+                VerticalOptions="Start"
+                WidthRequest="90">
+                <Grid
+                    Margin="4"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    WidthRequest="90">
+
+                    <Grid
+                        Margin="0,0,4,0"
+                        HeightRequest="18"
+                        HorizontalOptions="End"
+                        IsVisible="False"
+                        VerticalOptions="Start"
+                        WidthRequest="18">
+                        <Ellipse
+                            Fill="White"
+                            HeightRequest="16"
+                            HorizontalOptions="Center"
+                            Stroke="Blue"
+                            VerticalOptions="Center"
+                            WidthRequest="16" />
+                        <Ellipse
+                            x:Name="check"
+                            Fill="Blue"
+                            HeightRequest="8"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            WidthRequest="8" />
+                    </Grid>
+
+                    <ContentPresenter />
+                </Grid>
+
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CheckedStates">
+                            <VisualState x:Name="Checked">
+                                <VisualState.Setters>
+                                    <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Secondary}}" />
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource Primary}}" />
+                                    <Setter TargetName="check" Property="Opacity" Value="1" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Unchecked">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray600}}" />
+                                    <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}" />
+                                    <Setter TargetName="check" Property="Opacity" Value="0" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </VisualStateManager.VisualStateGroups>
+            </Border>
+        </ControlTemplate>
+
+        <Style TargetType="RadioButton">
+            <Setter Property="ControlTemplate" Value="{StaticResource RadioButtonTemplate}" />
+        </Style>
+    </ContentPage.Resources>
+
+
+
+    <VerticalStackLayout Padding="10">
+        <!--  RADIO BUTTON GROUP  -->
+        <StackLayout>
+            <Label
+                FontSize="18"
+                HorizontalOptions="Center"
+                Text="Measure Units"
+                VerticalOptions="Center" />
+
+            <HorizontalStackLayout
+                x:Name="unitsRbtnGroup"
+                HorizontalOptions="Center"
+                RadioButtonGroup.GroupName="units">
+
+                <!--  METRIC  -->
+                <RadioButton CheckedChanged="OnUnitChanged" Value="metric">
+                    <RadioButton.Content>
+                        <VerticalStackLayout>
+                            <Label
+                                HorizontalOptions="Center"
+                                Text="Metric"
+                                VerticalOptions="Center" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="26"
+                                HorizontalOptions="Center"
+                                Text="°C"
+                                VerticalOptions="Center" />
+                        </VerticalStackLayout>
+                    </RadioButton.Content>
+                </RadioButton>
+
+                <!--  IMPERIAL  -->
+                <RadioButton CheckedChanged="OnUnitChanged" Value="imperial">
+                    <RadioButton.Content>
+                        <VerticalStackLayout>
+                            <Label
+                                HorizontalOptions="Center"
+                                Text="Imperial"
+                                VerticalOptions="Center" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="26"
+                                HorizontalOptions="Center"
+                                Text="°F"
+                                VerticalOptions="Center" />
+                        </VerticalStackLayout>
+                    </RadioButton.Content>
+                </RadioButton>
+
+                <!--  STANDARD  -->
+                <RadioButton CheckedChanged="OnUnitChanged" Value="standard">
+                    <RadioButton.Content>
+                        <VerticalStackLayout>
+                            <Label
+                                HorizontalOptions="Center"
+                                Text="Standard"
+                                VerticalOptions="Center" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="26"
+                                HorizontalOptions="Center"
+                                Text="°K"
+                                VerticalOptions="Center" />
+                        </VerticalStackLayout>
+                    </RadioButton.Content>
+                </RadioButton>
+
+            </HorizontalStackLayout>
+        </StackLayout>
+
+    </VerticalStackLayout>
+</ContentPage>

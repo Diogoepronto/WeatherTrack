@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="WeatherTrack.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:model="clr-namespace:WeatherTrack.Models"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    xmlns:viewmodel="clr-namespace:WeatherTrack.ViewModels"
+    Title="{Binding PageTitle}"
+    x:DataType="viewmodel:WeatherViewModel">
+
+    <Grid
+        ColumnDefinitions="*"
+        RowDefinitions="*,Auto"
+        RowSpacing="10">
+        <RefreshView Command="{Binding GetWeatherCommand}" IsRefreshing="{Binding IsRefreshing}">
+            <ScrollView>
+                <VerticalStackLayout Spacing="50" VerticalOptions="Center">
+
+                    <!--  MAIN INFORMATION  -->
+                    <VerticalStackLayout Margin="0,50,0,0">
+                        <!--  WEATHER DESCRIPTION  -->
+                        <Label
+                            FontSize="24"
+                            HorizontalOptions="Center"
+                            SemanticProperties.Description="Weather condition"
+                            SemanticProperties.HeadingLevel="Level2"
+                            Text="{Binding Weather.Weather[0].Description}" />
+
+                        <!--  LOTTIE ANIMATION  -->
+                        <StackLayout x:Name="lottieAnimation">
+                            <skia:SKLottieView
+                                HeightRequest="200"
+                                HorizontalOptions="Center"
+                                RepeatCount="-1"
+                                Source="{Binding Weather.Weather[0].IconImage}"
+                                WidthRequest="200" />
+                        </StackLayout>
+
+                        <!--  TEMPERATURE  -->
+                        <Label
+                            FontFamily="OpenSansSemibold"
+                            FontSize="46"
+                            HorizontalOptions="Center"
+                            SemanticProperties.Description="Current temperature"
+                            SemanticProperties.HeadingLevel="Level1"
+                            Text="{Binding Weather.MainData.Temperature, StringFormat='{0:N0}°'}" />
+
+                        <!--  FELLS LIKE  -->
+                        <Label
+                            FontSize="16"
+                            HorizontalOptions="Center"
+                            SemanticProperties.Description="Current temperature"
+                            SemanticProperties.HeadingLevel="Level1"
+                            Text="{Binding Weather.MainData.FeelsLike, StringFormat='Feels like: {0:N0}°'}" />
+                    </VerticalStackLayout>
+
+                    <!--  MISC INFORMATION  -->
+                    <Grid
+                        Padding="50,0,50,0"
+                        ColumnDefinitions="*,Auto"
+                        RowDefinitions="Auto, Auto, Auto, Auto, Auto"
+                        RowSpacing="10">
+
+                        <!--  HUMIDITY  -->
+                        <Label
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Text="Humidity" />
+                        <Label
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            HorizontalOptions="End"
+                            Text="{Binding Weather.MainData.Humidity, StringFormat='{0}%'}" />
+
+                        <!--  PRESSURE  -->
+                        <Label
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Text="Pressure" />
+                        <Label
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            HorizontalOptions="End"
+                            Text="{Binding Weather.MainData.Pressure, StringFormat='{0} hPa'}" />
+
+                        <!--  WIND SPEED  -->
+                        <Label
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Text="Wind Speed" />
+                        <Label
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            HorizontalOptions="End">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{Binding Weather.Wind.Speed}" />
+                                    <Span Text=" " />
+                                    <Span Text="{Binding Weather.Wind.Metric}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+
+                        <!--  WIND DIRECTION  -->
+                        <Label
+                            Grid.Row="3"
+                            Grid.Column="0"
+                            Text="Wind Direction" />
+                        <HorizontalStackLayout
+                            Grid.Row="3"
+                            Grid.Column="1"
+                            HorizontalOptions="End">
+                            <Label HorizontalOptions="End" Text="{Binding Weather.Wind.Direction, StringFormat='{0}°'}" />
+                            <Image
+                                Margin="5,0,0,0"
+                                HeightRequest="18"
+                                HorizontalOptions="End"
+                                Rotation="{Binding Weather.Wind.Direction}"
+                                Source="winddirection.svg" />
+
+                        </HorizontalStackLayout>
+
+                        <!--  WIND GUST  -->
+                        <Label
+                            Grid.Row="4"
+                            Grid.Column="0"
+                            Text="Wind Gust" />
+                        <Label
+                            Grid.Row="4"
+                            Grid.Column="1"
+                            HorizontalOptions="End">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{Binding Weather.Wind.Gust}" />
+                                    <Span Text=" " />
+                                    <Span Text="{Binding Weather.Wind.Metric}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </Grid>
+
+                    <!--  SUNRISE/SUNSET  -->
+                    <Grid
+                        Padding="50,0,50,0"
+                        Margin="0,0,0,30"
+                        ColumnDefinitions="*,*"
+                        ColumnSpacing="50"
+                        HorizontalOptions="Center">
+
+                        <StackLayout Grid.Column="0">
+                            <Image Source="sunrise.svg" WidthRequest="80" />
+
+                            <Label
+                                Margin="0,0,0,5"
+                                FontFamily="OpenSansSemibold"
+                                HorizontalOptions="Center"
+                                Text="Sunrise" />
+                            <Label HorizontalOptions="Center" Text="{Binding Weather.Sys.SunriseDateTime}" />
+                        </StackLayout>
+
+                        <StackLayout Grid.Column="1">
+                            <Image Source="sunset.svg" WidthRequest="80" />
+                            <Label
+                                Margin="0,0,0,5"
+                                FontFamily="OpenSansSemibold"
+                                HorizontalOptions="Center"
+                                Text="Sunset" />
+                            <Label HorizontalOptions="Center" Text="{Binding Weather.Sys.SunsetDateTime}" />
+                        </StackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+
+        <ActivityIndicator
+            Grid.RowSpan="4"
+            HorizontalOptions="FillAndExpand"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="CenterAndExpand" />
+    </Grid>
+</ContentPage>
