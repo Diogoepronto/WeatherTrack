@@ -2,6 +2,7 @@
 using SkiaSharp.Views.Maui.Controls.Hosting;
 using WeatherTrack.Services;
 using WeatherTrack.ViewModels;
+using WeatherTrack.Views;
 
 namespace WeatherTrack
 {

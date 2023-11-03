@@ -23,8 +23,11 @@ public partial class WeatherViewModel : BaseViewModel
     bool _isRefreshing;
 
     [ObservableProperty]
-    WeatherData _weather;
-    
+    CurrentWeather _weather;
+
+    [ObservableProperty]
+    ForecastList _forecast;
+
     [ObservableProperty]
     string _pageTitle = "Weather Track";
 
@@ -75,12 +78,13 @@ public partial class WeatherViewModel : BaseViewModel
             var units = Preferences.Default.Get("units", "metric");
 
             var query =
-                $"?lat={geolocation.Latitude}" +
+                $"lat={geolocation.Latitude}" +
                 $"&lon={geolocation.Longitude}" +
-                $"&units={units}" +
-                "&appid=";
+                $"&units={units}";
 
-            Weather = await _weatherService.GetWeather(query);
+            Weather = await _weatherService.GetCurrentWeatherAsync(query);
+
+            Forecast = await _weatherService.GetForecastAsync(query);
 
             PageTitle = $"{Weather.CityName}, {Weather.Sys.CountryCode}";
         }

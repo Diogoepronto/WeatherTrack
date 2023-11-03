@@ -17,7 +17,7 @@ public partial class SettingsPage : ContentPage
 
 	public void OnUnitChanged(object sender, EventArgs e)
 	{
-		var button = sender as RadioButton;
-		Preferences.Default.Set("units", button.Value.ToString());
+		var radioButton = sender as RadioButton;
+		Preferences.Default.Set("units", radioButton.Value.ToString());
     }
 }

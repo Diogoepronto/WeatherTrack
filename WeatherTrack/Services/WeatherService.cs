@@ -19,19 +19,19 @@ namespace WeatherTrack.Services
             _httpClient = new HttpClient();
         }
 
-        public async Task<WeatherData> GetWeather(string query)
+        public async Task<CurrentWeather> GetCurrentWeatherAsync(string query)
         {
-            WeatherData weatherData = null;
+            CurrentWeather currentWeather = null;
 
             try
             {
-                var url = Constants.APIUrl + query + Constants.APIKey;
+                var url = Constants.APIUrl + "weather?" + query + "&appid=" + Constants.APIKey;
                 var response = await _httpClient.GetAsync(url);
 
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    weatherData = JsonConvert.DeserializeObject<WeatherData>(json);
+                    currentWeather = JsonConvert.DeserializeObject<CurrentWeather>(json);
                 }
             }
             catch (Exception ex)
@@ -41,7 +41,32 @@ namespace WeatherTrack.Services
                 throw;
             }
 
-            return weatherData;
+            return currentWeather;
+        }
+
+        public async Task<ForecastList> GetForecastAsync(string query)
+        {
+            ForecastList forecastList = null;
+
+            try
+            {
+                var url = Constants.APIUrl + "forecast?" + query + "&appid=" + Constants.APIKey;
+                var response = await _httpClient.GetAsync(url);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    forecastList = JsonConvert.DeserializeObject<ForecastList>(json);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                await Shell.Current.DisplayAlert("Error", "Something went wrong when trying to get the weather data.", "OK");
+                throw;
+            }
+
+            return forecastList;
         }
     }
 }

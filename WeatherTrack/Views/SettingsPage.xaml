@@ -86,7 +86,7 @@
             <Label
                 FontSize="18"
                 HorizontalOptions="Center"
-                Text="Measure Units"
+                Text="Units of measurement"
                 VerticalOptions="Center" />
 
             <HorizontalStackLayout

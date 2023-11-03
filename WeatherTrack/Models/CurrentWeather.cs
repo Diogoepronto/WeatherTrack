@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace WeatherTrack.Models
 {
-    public class WeatherData
+    public class CurrentWeather
     {
         [JsonProperty("coord")]
-        public Coord Coordinates { get; set; }
+        public Coordinates Coordinates { get; set; }
         [JsonProperty("weather")]
-        public List<Weather> Weather { get; set; }
+        public List<WeatherDescription> Weather { get; set; }
 
         [JsonProperty("main")]
         public MainData MainData { get; set; }
@@ -24,7 +24,8 @@ namespace WeatherTrack.Models
         public Sys Sys { get; set; }
         public string Base { get; set; }
         public int Visibility { get; set; }
-        public int Dt { get; set; }
+        [JsonProperty("dt")]
+        public int CurrentWeatherDateTime { get; set; }
         public int Timezone { get; set; }
         [JsonProperty("id")]
         public int CityId { get; set; }
@@ -33,17 +34,18 @@ namespace WeatherTrack.Models
         public int Cod { get; set; }
     }
 
-    public class Weather
+    public class WeatherDescription
     {
         public int Id { get; set; }
         public string Main { get; set; }
         public string Description { get; set; }
         public string Icon { get; set; } = "weather01d.png";
 
-        public SKFileLottieImageSource IconImage => new() { File = $"weather{Icon}.json" };
+        public string IconImage => $"weather{Icon}.svg";
+        public SKFileLottieImageSource IconAnimation => new() { File = $"weather{Icon}.json" };
     }
 
-    public class Coord
+    public class Coordinates
     {
         [JsonProperty("lon")]
         public double Longitude { get; set; }
@@ -119,19 +121,22 @@ namespace WeatherTrack.Models
         {
             get
             {
-                DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(Sunrise);
-                DateTime dateTime = dateTimeOffset.UtcDateTime;
-                return dateTime.ToString("HH:mm");
+                return ConvertToDateTime(Sunrise).ToString("HH:mm");
             }
         } 
         public string SunsetDateTime
         {
             get
             {
-                DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(Sunset);
-                DateTime dateTime = dateTimeOffset.UtcDateTime;
-                return dateTime.ToString("HH:mm");
+                return ConvertToDateTime(Sunset).ToString("HH:mm");
             }
+        }
+
+        public DateTime ConvertToDateTime(int unixTime)
+        {
+            DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(unixTime);
+            DateTime dateTime = dateTimeOffset.UtcDateTime;
+            return dateTime;
         }
     }
 }

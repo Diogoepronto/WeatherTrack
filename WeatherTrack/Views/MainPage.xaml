@@ -33,7 +33,7 @@
                                 HeightRequest="200"
                                 HorizontalOptions="Center"
                                 RepeatCount="-1"
-                                Source="{Binding Weather.Weather[0].IconImage}"
+                                Source="{Binding Weather.Weather[0].IconAnimation}"
                                 WidthRequest="200" />
                         </StackLayout>
 
@@ -143,7 +143,6 @@
                     <!--  SUNRISE/SUNSET  -->
                     <Grid
                         Padding="50,0,50,0"
-                        Margin="0,0,0,30"
                         ColumnDefinitions="*,*"
                         ColumnSpacing="50"
                         HorizontalOptions="Center">
@@ -169,10 +168,43 @@
                             <Label HorizontalOptions="Center" Text="{Binding Weather.Sys.SunsetDateTime}" />
                         </StackLayout>
                     </Grid>
+
+                    <!--  FORECAST  -->
+                    <StackLayout Margin="20,0,20,0">
+                        <Label
+                            FontFamily="OpenSansSemibold"
+                            FontSize="26"
+                            HorizontalTextAlignment="Center"
+                            Text="Forecast" />
+                        <ScrollView Margin="0,20" Orientation="Horizontal">
+                            <CollectionView ItemsLayout="HorizontalList" ItemsSource="{Binding Forecast.ForecastDataList}">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="model:ForecastData">
+                                        <StackLayout Padding="10">
+                                            <Label
+                                                FontFamily="OpenSansSemibold"
+                                                HorizontalTextAlignment="Center"
+                                                Text="{Binding ForecastDayOfWeek}" />
+                                            <Image
+                                                HeightRequest="50"
+                                                HorizontalOptions="Center"
+                                                Source="{Binding Weather[0].IconImage}"
+                                                WidthRequest="50" />
+                                            <Label
+                                                FontFamily="OpenSansSemibold"
+                                                HorizontalTextAlignment="Center"
+                                                Text="{Binding MainData.Temperature, StringFormat='{0:N0}°'}" />
+                                            <Label HorizontalTextAlignment="Center" Text="{Binding ForecastHour}" />
+                                        </StackLayout>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </ScrollView>
+                    </StackLayout>
                 </VerticalStackLayout>
             </ScrollView>
         </RefreshView>
-
+        
         <ActivityIndicator
             Grid.RowSpan="4"
             HorizontalOptions="FillAndExpand"

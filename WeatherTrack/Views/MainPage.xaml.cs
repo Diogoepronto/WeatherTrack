@@ -7,6 +7,7 @@ namespace WeatherTrack;
 public partial class MainPage : ContentPage
 {
     WeatherViewModel _viewModel;
+    bool _isFirstAppearence = true;
 
     public MainPage(WeatherViewModel viewModel)
     {
@@ -17,7 +18,12 @@ public partial class MainPage : ContentPage
 
     protected override void OnAppearing()
     {
-        base.OnAppearing();
-        _viewModel.GetWeatherCommand.Execute(this);
+        base.OnAppearing();        
+
+        if( _isFirstAppearence )
+        {
+            _viewModel.GetWeatherCommand.Execute(this);
+            _isFirstAppearence = false;
+        }
     }
 }
