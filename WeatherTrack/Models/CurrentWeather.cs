@@ -114,7 +114,7 @@ namespace WeatherTrack.Models
         public int Direction { get; set; } = 0;
         public double Gust { get; set; } = 0;
 
-        public string Metric => Preferences.Default.Get("units", "metric") == "imperial" ? "mph" : "m/s";
+        public string Metric => Preferences.Default.Get("UnitsOfMeasurement", "metric") == "imperial" ? "mph" : "m/s";
     }
 
     public class Sys
