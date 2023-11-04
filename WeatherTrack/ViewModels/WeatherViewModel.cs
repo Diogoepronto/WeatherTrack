@@ -66,36 +66,56 @@ public partial class WeatherViewModel : BaseViewModel
 
             if (useCurrentLocation)
             {
-                var geolocation = await _geolocation.GetLocationAsync(
-                    new GeolocationRequest
+                bool tryAgain = true;
+                while (tryAgain)
+                {
+                    try
                     {
-                        DesiredAccuracy = GeolocationAccuracy.Medium,
-                        Timeout = TimeSpan.FromSeconds(30)
-                    });
+                        var geolocation = await _geolocation.GetLocationAsync(
+                        new GeolocationRequest
+                        {
+                            DesiredAccuracy = GeolocationAccuracy.Medium,
+                            Timeout = TimeSpan.FromSeconds(30)
+                        });
 
-                if (geolocation == null)
-                {
-                    geolocation = await _geolocation.GetLastKnownLocationAsync();
-                }
+                        if (geolocation == null)
+                        {
+                            geolocation = await _geolocation.GetLastKnownLocationAsync();
+                        }
 
-                if (geolocation == null)
-                {
-                    await Shell.Current.DisplayAlert("Error", "Something went wrong when trying to get your location. Please, check if GPS is enabled and try again.", "OK");
-                    return;
-                }
+                        if (geolocation == null)
+                        {
+                            await Shell.Current.DisplayAlert("Error", "Something went wrong when trying to get your location. Please, check if GPS is enabled and try again.", "OK");
+                            return;
+                        }
 
-                query +=
-                    $"&lat={geolocation.Latitude}" +
-                    $"&lon={geolocation.Longitude}";
+                        query +=
+                            $"&lat={geolocation.Latitude}" +
+                            $"&lon={geolocation.Longitude}";
+
+                        tryAgain = false;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex);
+                        tryAgain = await Shell.Current.DisplayAlert("Permission Required", "To provide accurate weather information, we need access to your location. Would you like to try again?", "Yes", "No");
+
+                        if (!tryAgain)
+                        {
+                            Preferences.Default.Set("UseCurrentLocation", false);
+                            await Shell.Current.GoToAsync("//SettingsPage");
+                        }
+                    }
+                }                
             }
             else
             {
                 query += $"&q={selectedLocation}";
             }
 
-            Weather = await _weatherService.GetCurrentWeatherAsync(query);
+            Weather = Task.Run(async () => await _weatherService.GetCurrentWeatherAsync(query)).Result;
 
-            Forecast = await _weatherService.GetForecastAsync(query);
+            Forecast = Task.Run(async () => await _weatherService.GetForecastAsync(query)).Result;
 
             if(!Weather.FetchSuccessful)
             {
@@ -109,8 +129,6 @@ public partial class WeatherViewModel : BaseViewModel
         {
             Debug.WriteLine(ex);
             await Shell.Current.DisplayAlert("Error", "Something went wrong when trying to get the weather data.", "OK");
-
-            throw;
         }
         finally
         {
