@@ -15,16 +15,21 @@ namespace WeatherTrack.Models
         public int QtyOfForecastsFetched { get; set; }
 
         [JsonProperty("list")]
-        public List<ForecastData> ForecastDataList { get; set; }
+        public List<ForecastData> ForecastDataList { get; set; } = new List<ForecastData>();
+
+        public bool FetchSuccessful { get; set; } = true;
     }
 
     public class ForecastData
     {
         [JsonProperty("dt")]
-        public int ForecastDateTime { get; set; }
+        public int ForecastDateTime { get; set; } = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+
         [JsonProperty("main")]
-        public MainData MainData { get; set; }
-        public List<WeatherDescription> Weather { get; set; }
+        public MainData MainData { get; set; } = new();
+
+        public List<WeatherDescription> Weather { get; set; } = new();
+
         [JsonProperty("pop")]
         public double ProbabilityOfPrecipitation { get; set; }
 

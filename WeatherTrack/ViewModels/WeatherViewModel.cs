@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Maui.Devices.Sensors;
 using SkiaSharp.Extended.UI.Controls;
 using System;
 using System.Collections;
@@ -15,7 +16,7 @@ namespace WeatherTrack.ViewModels;
 
 public partial class WeatherViewModel : BaseViewModel
 {
-    private readonly WeatherService _weatherService;
+    private readonly IWeatherService _weatherService;
     private readonly IConnectivity _connectivity;
     private readonly IGeolocation _geolocation;
 
@@ -31,7 +32,8 @@ public partial class WeatherViewModel : BaseViewModel
     [ObservableProperty]
     string _pageTitle = "Weather Track";
 
-    public WeatherViewModel(WeatherService weatherService, IConnectivity connectivity, IGeolocation geolocation)
+
+    public WeatherViewModel(IWeatherService weatherService, IConnectivity connectivity, IGeolocation geolocation)
     {
         Title = "Weather Track";
         _weatherService = weatherService;
@@ -46,6 +48,10 @@ public partial class WeatherViewModel : BaseViewModel
 
         try
         {
+            string unitsOfMeasurement = Preferences.Default.Get("UnitsOfMeasurement", "metric");
+            bool useCurrentLocation = Preferences.Default.Get("UseCurrentLocation", true);
+            string selectedLocation = Preferences.Default.Get("SelectedLocation", string.Empty);
+
             // Check internet connection
             if (_connectivity.NetworkAccess != NetworkAccess.Internet)
             {
@@ -56,35 +62,46 @@ public partial class WeatherViewModel : BaseViewModel
             IsBusy = true;
 
             // Get user's location
-            var geolocation = await _geolocation.GetLocationAsync(
-                new GeolocationRequest
+            var query = $"units={unitsOfMeasurement}";
+
+            if (useCurrentLocation)
+            {
+                var geolocation = await _geolocation.GetLocationAsync(
+                    new GeolocationRequest
+                    {
+                        DesiredAccuracy = GeolocationAccuracy.Medium,
+                        Timeout = TimeSpan.FromSeconds(30)
+                    });
+
+                if (geolocation == null)
                 {
-                    DesiredAccuracy = GeolocationAccuracy.Medium,
-                    Timeout = TimeSpan.FromSeconds(30)
-                });
+                    geolocation = await _geolocation.GetLastKnownLocationAsync();
+                }
 
-            if (geolocation == null)
-            {
-                geolocation = await _geolocation.GetLastKnownLocationAsync();
+                if (geolocation == null)
+                {
+                    await Shell.Current.DisplayAlert("Error", "Something went wrong when trying to get your location. Please, check if GPS is enabled and try again.", "OK");
+                    return;
+                }
+
+                query +=
+                    $"&lat={geolocation.Latitude}" +
+                    $"&lon={geolocation.Longitude}";
             }
-
-            if (geolocation == null)
+            else
             {
-                await Shell.Current.DisplayAlert("Error", "Something went wrong when trying to get your location. Please, check if GPS is enabled and try again.", "OK");
-                return;
+                query += $"&q={selectedLocation}";
             }
-
-            // Generate the query to fetch data from the API
-            var units = Preferences.Default.Get("units", "metric");
-
-            var query =
-                $"lat={geolocation.Latitude}" +
-                $"&lon={geolocation.Longitude}" +
-                $"&units={units}";
 
             Weather = await _weatherService.GetCurrentWeatherAsync(query);
 
             Forecast = await _weatherService.GetForecastAsync(query);
+
+            if(!Weather.FetchSuccessful)
+            {
+                await Shell.Current.DisplayAlert("Error", "Something went wrong when trying to get the weather data.", "OK");
+                await Shell.Current.GoToAsync("//SettingsPage");
+            }
 
             PageTitle = $"{Weather.CityName}, {Weather.Sys.CountryCode}";
         }
@@ -92,6 +109,7 @@ public partial class WeatherViewModel : BaseViewModel
         {
             Debug.WriteLine(ex);
             await Shell.Current.DisplayAlert("Error", "Something went wrong when trying to get the weather data.", "OK");
+
             throw;
         }
         finally

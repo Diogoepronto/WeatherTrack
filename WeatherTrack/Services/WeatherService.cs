@@ -10,7 +10,7 @@ using WeatherTrack.Models;
 
 namespace WeatherTrack.Services
 {
-    public class WeatherService
+    public class WeatherService : IWeatherService
     {
         HttpClient _httpClient;
 
@@ -21,7 +21,7 @@ namespace WeatherTrack.Services
 
         public async Task<CurrentWeather> GetCurrentWeatherAsync(string query)
         {
-            CurrentWeather currentWeather = null;
+            CurrentWeather currentWeather = new();
 
             try
             {
@@ -33,11 +33,16 @@ namespace WeatherTrack.Services
                     var json = await response.Content.ReadAsStringAsync();
                     currentWeather = JsonConvert.DeserializeObject<CurrentWeather>(json);
                 }
+                else
+                {
+                    currentWeather.FetchSuccessful = false;
+                }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
                 await Shell.Current.DisplayAlert("Error", "Something went wrong when trying to get the weather data.", "OK");
+
                 throw;
             }
 
@@ -46,7 +51,7 @@ namespace WeatherTrack.Services
 
         public async Task<ForecastList> GetForecastAsync(string query)
         {
-            ForecastList forecastList = null;
+            ForecastList forecastList = new();
 
             try
             {
@@ -57,6 +62,10 @@ namespace WeatherTrack.Services
                 {
                     var json = await response.Content.ReadAsStringAsync();
                     forecastList = JsonConvert.DeserializeObject<ForecastList>(json);
+                }
+                else
+                {
+                    forecastList.FetchSuccessful = false;
                 }
             }
             catch (Exception ex)

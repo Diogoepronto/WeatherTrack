@@ -3,7 +3,9 @@
     x:Class="WeatherTrack.Views.SettingsPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="Settings">
+    xmlns:viewmodel="clr-namespace:WeatherTrack.ViewModels"
+    Title="Settings"
+    x:DataType="viewmodel:SettingsViewModel">
 
     <!--  CUSTOM RADIO BUTTONS  -->
     <ContentPage.Resources>
@@ -15,7 +17,7 @@
                 HorizontalOptions="Start"
                 Stroke="Black"
                 StrokeShape="RoundRectangle 10"
-                StrokeThickness="2"
+                StrokeThickness="1"
                 VerticalOptions="Start"
                 WidthRequest="90">
                 <Grid
@@ -55,6 +57,7 @@
                         <VisualStateGroup x:Name="CheckedStates">
                             <VisualState x:Name="Checked">
                                 <VisualState.Setters>
+                                    <Setter Property="StrokeThickness" Value="2" />
                                     <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Secondary}}" />
                                     <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource Primary}}" />
                                     <Setter TargetName="check" Property="Opacity" Value="1" />
@@ -147,8 +150,30 @@
                         </VerticalStackLayout>
                     </RadioButton.Content>
                 </RadioButton>
-
             </HorizontalStackLayout>
+
+            <Grid
+                Padding="10"
+                ColumnDefinitions="*,Auto"
+                RowDefinitions="*,*">
+                <Label
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Text="Use Current location"
+                    VerticalTextAlignment="Center" />
+                <Switch
+                    x:Name="useLocationSwitch"
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Toggled="OnSwitchChanged" />
+
+                <Entry
+                    x:Name="selectedLocationSearch"
+                    Grid.Row="1"
+                    Grid.ColumnSpan="2"
+                    IsVisible="False"
+                    TextChanged="OnCityTextChanged" />
+            </Grid>
         </StackLayout>
 
     </VerticalStackLayout>

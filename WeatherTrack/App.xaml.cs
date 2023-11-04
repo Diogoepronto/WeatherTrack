@@ -1,4 +1,5 @@
-﻿using WeatherTrack.ViewModels;
+﻿using WeatherTrack.Models;
+using WeatherTrack.ViewModels;
 
 namespace WeatherTrack
 {

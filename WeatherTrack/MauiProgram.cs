@@ -27,9 +27,10 @@ namespace WeatherTrack
             builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
             builder.Services.AddSingleton<IGeolocation>(Geolocation.Default);
 
-            builder.Services.AddSingleton<WeatherService>();
+            builder.Services.AddSingleton<IWeatherService, WeatherService>();
 
             builder.Services.AddSingleton<WeatherViewModel>();
+            builder.Services.AddSingleton<SettingsViewModel>();
 
             builder.Services.AddSingleton<MainPage>();
 
